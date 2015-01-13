@@ -365,7 +365,7 @@ void FluidSimulation::simulateErosion(double dt)
             float vV = vVel(y,x);
 
             // local terrain normal
-            vec3 normal = vec3(getTerrain(y,x+1) - getTerrain(y,x-1), getTerrain(y+1,x) - getTerrain(y-1,x), 2 );
+            vec3 normal = vec3(getTerrain(y,x+1) - getTerrain(y,x-1), getTerrain(y+1,x) - getTerrain(y-1,x), 2 * lX );
             normal = normalize(normal);
             vec3 up(0,0,1);
             float cosa = dot(normal,up);
@@ -382,16 +382,16 @@ void FluidSimulation::simulateErosion(double dt)
             if (delta > 0.0f)
             {
                 float d = Ks*delta;
-                terrain(y,x)  -= d;
-                water(y,x)    += d;
+                //terrain(y,x)  -= d;
+                //water(y,x)    += d;
                 sediment(y,x) += d;
             }
             // deposit onto ground
             else if (delta < 0.0f)
             {
                 float d = Kd*delta;
-                terrain(y,x)  -= d;
-                water(y,x)    += d;
+                //terrain(y,x)  -= d;
+                //water(y,x)    += d;
                 sediment(y,x) += d;
             }
         }
@@ -475,9 +475,9 @@ void FluidSimulation::update(double dt, bool rain, bool flood)
     // 2. Simulate Flow
     simulateFlow(dt);
     // 3. Simulate Errosion-deposition
-    //simulateErosion(dt);
+    simulateErosion(dt);
     // 4. Advection of suspended sediment
-    //simulateSedimentTransportation(dt);
+    simulateSedimentTransportation(dt);
     // 5. Simulate Evaporation
     simulateEvaporation(dt);
 
