@@ -203,7 +203,7 @@ void FluidSimulation::simulateFlow(double dt)
     // Outflux computation settings
     ////////////////////////////////////////////////////////////
     float l = lX;
-    float A = 20;
+    float A = 2;
     //float A = 0.00005f;
 
     const float dx = lX;
@@ -465,7 +465,7 @@ void FluidSimulation::simulateEvaporation(double dt)
 
 void FluidSimulation::update(double dt, bool rain, bool flood)
 {
-    dt = 0.02f;
+    //dt = 0.02f;
     // 1. Add water to the system
     if (rain)
         makeRain(dt);
@@ -476,11 +476,11 @@ void FluidSimulation::update(double dt, bool rain, bool flood)
     // 2. Simulate Flow
     simulateFlow(dt);
     // 3. Simulate Errosion-deposition
-    simulateErosion(dt);
+    //simulateErosion(dt);
     // 4. Advection of suspended sediment
-    simulateSedimentTransportation(dt);
+    //simulateSedimentTransportation(dt);
     // 5. Simulate Evaporation
-    simulateEvaporation(dt);
+    //simulateEvaporation(dt);
 
     //smoothTerrain();
     computeSurfaceNormals();
