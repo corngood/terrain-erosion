@@ -189,8 +189,7 @@ void FluidSimulation::computeSurfaceNormals()
 
             state.surfaceNormals(y,x) = N;
 
-            state.surfaceNormals(y,x) = vec3(uVel(y,x), vVel(y,x), 0) * 0.02f / lX * 100.f;
-            state.surfaceNormals(y,x) = vec3(lFlux(y,x), rFlux(y,x), tFlux(y,x)) * 0.001f;
+            state.surfaceNormals(y,x) = vec3(uVel(y,x), vVel(y,x), 0) * 0.02f / lX;
         }
     }
 }
