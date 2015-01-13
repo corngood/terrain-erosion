@@ -359,10 +359,10 @@ void FluidSimulation::simulateErosion(double dt)
             sinAlpha = std::max(sinAlpha,0.1f);
 
             // local sediment capacity of the flow
-            float capacity = Kc * sqrt(uV*uV+vV*vV)*sinAlpha*(std::min(water(y,x),0.01f)/0.01f) ;
+            float capacity = Kc * std::sqrt(uV*uV+vV*vV)*sinAlpha*(std::min(water(y,x),0.01f)/0.01f) ;
             float delta = (capacity-sediment(y,x));
 
-            float v = sqrt(uV*uV+vV*vV);
+            float v = std::sqrt(uV*uV+vV*vV);
             float fctr = (std::min(water(y,x),0.01f)/0.01f);
 
             if (delta > 0.0f)
