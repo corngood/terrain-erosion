@@ -296,7 +296,7 @@ uint Shader::AttributeLocation(const string &name)
        }
        if (!at.Present)
        {
-           throw ShaderException("Shader Exception :: Path=\""+_vertexSourcePath+ "\" :: Attribute is currently not present in the shader :: "+name);
+           //throw ShaderException("Shader Exception :: Path=\""+_vertexSourcePath+ "\" :: Attribute is currently not present in the shader :: "+name);
        }
        return at.Location;
     }

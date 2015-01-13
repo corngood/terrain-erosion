@@ -69,4 +69,9 @@ void main(void)
 
     float gamma = 2.2;
     fColor.rgb = pow(fColor.rgb,vec3(1,1,1)/gamma);
+    //fColor.rgb = vNormal.rgb;
+    fColor.a = 1;
+    /*fColor.b = vWaterHeight / 10;
+    fColor.r = vSediment / 10;
+    fColor.g = 0;*/
 }

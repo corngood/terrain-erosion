@@ -35,8 +35,10 @@ FluidSimulation::FluidSimulation(SimulationState& state)
       rFlux(water.width(), water.height()),
       tFlux(water.width(), water.height()),
       bFlux(water.width(), water.height()),
-      lX(1.0),
-      lY(1.0),
+      lX(20000.f / water.width()),
+      lY(20000.f / water.height()),
+      //lX(1),
+      //lY(1),
       gravity(9.81)
 {
     assert(water.height() == terrain.height() && water.width() == terrain.width());
@@ -47,6 +49,7 @@ FluidSimulation::FluidSimulation(SimulationState& state)
             uVel(i,j) = 0;
             vVel(i,j) = 0;
             lFlux(i,j) = rFlux(i,j) = tFlux(i,j) = bFlux(i,j) = 0;
+            water(i,j) = 0;
         }
     }
 }
@@ -59,7 +62,7 @@ RANDOM rnd;
 
 void FluidSimulation::makeRain(double dt)
 {
-    std::uniform_int_distribution<ushort> rndInt(1,water.width()-2);
+    /*std::uniform_int_distribution<ushort> rndInt(1,water.width()-2);
 
     for (uint i=0; i<100; i++)
     {
@@ -77,12 +80,20 @@ void FluidSimulation::makeRain(double dt)
         water(y+1, x)  += 1.0/16.0;
         water(y+1, x+1)  += 1.0/16.0;
     }
+    */
 
 //    std::uniform_real_distribution<float> rndFloat(0.0f,1.0f);
 //    for (uint i=0; i<water.size(); i++)
 //    {
 //        water(i) += 0.01*rndFloat(rnd);
     //    }
+    for (int x=0; x<terrain.width(); ++x)
+    {
+        for (int y=0; y<terrain.height(); ++y)
+        {
+            water(y, x) += dt * 0.012f;
+        }
+    }
 }
 
 void FluidSimulation::makeFlood(double dt)
@@ -173,10 +184,12 @@ void FluidSimulation::computeSurfaceNormals()
             t = getTerrain(y+1,x) + getWater(y+1,x);
             b = getTerrain(y-1,x) + getWater(y-1,x);
 
-            N = vec3(l-r, t - b, 2 );
+            N = vec3(l-r, t - b, 2 * lX );
             N = normalize(N);
 
             state.surfaceNormals(y,x) = N;
+
+            //state.surfaceNormals(y,x) = vec3(uVel(y,x), vVel(y,x), 0) * 0.02f / lX;
         }
     }
 }
@@ -188,8 +201,9 @@ void FluidSimulation::simulateFlow(double dt)
 
     // Outflux computation settings
     ////////////////////////////////////////////////////////////
-    float l = 1;
-    float A = 0.00005;
+    float l = lX;
+    float A = 20;
+    //float A = 0.00005f;
 
     const float dx = lX;
     const float dy = lY;
@@ -337,9 +351,9 @@ float FluidSimulation::getWater(int y, int x){
 
 void FluidSimulation::simulateErosion(double dt)
 {
-    const float Kc = 25.0f; // sediment capacity constant
-    const float Ks = 0.0001f*12*10; // dissolving constant
-    const float Kd = 0.0001f*12*10; // deposition constant
+    const float Kc = 1;
+    const float Ks = 0.5f;
+    const float Kd = 1;
 
     #pragma omp parallel for
     for (int y=0; y<sediment.height(); ++y)
@@ -359,7 +373,7 @@ void FluidSimulation::simulateErosion(double dt)
             sinAlpha = std::max(sinAlpha,0.1f);
 
             // local sediment capacity of the flow
-            float capacity = Kc * std::sqrt(uV*uV+vV*vV)*sinAlpha*(std::min(water(y,x),0.01f)/0.01f) ;
+            float capacity = Kc * std::sqrt(uV*uV+vV*vV)*sinAlpha*std::min(water(y,x)/10, 1.f) ;
             float delta = (capacity-sediment(y,x));
 
             float v = std::sqrt(uV*uV+vV*vV);
@@ -432,7 +446,7 @@ void FluidSimulation::simulateSedimentTransportation(double dt)
 
 void FluidSimulation::simulateEvaporation(double dt)
 {
-    const float Ke = 0.00011*0.5; // evaporation constant
+    const float Ke = 0.015f;
     #pragma omp parallel for
     for (uint y=0; y<water.height(); ++y)
     {
@@ -440,16 +454,17 @@ void FluidSimulation::simulateEvaporation(double dt)
         {
             water(y,x) = std::max(water(y,x)*(1-Ke*dt),0.0);
 
-            if (water(y,x) <0.005f)
+            /*if (water(y,x) <0.005f)
             {
                 water(y,x) = 0.0f;
-            }
+            }*/
         }
     }
 }
 
 void FluidSimulation::update(double dt, bool rain, bool flood)
 {
+    dt = 0.02f;
     // 1. Add water to the system
     if (rain)
         makeRain(dt);
@@ -460,14 +475,12 @@ void FluidSimulation::update(double dt, bool rain, bool flood)
     // 2. Simulate Flow
     simulateFlow(dt);
     // 3. Simulate Errosion-deposition
-    simulateErosion(dt);
+    //simulateErosion(dt);
     // 4. Advection of suspended sediment
-    simulateSedimentTransportation(dt);
+    //simulateSedimentTransportation(dt);
     // 5. Simulate Evaporation
     simulateEvaporation(dt);
 
-    smoothTerrain();
+    //smoothTerrain();
     computeSurfaceNormals();
-
-
 }

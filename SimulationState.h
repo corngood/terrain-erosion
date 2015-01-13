@@ -38,14 +38,6 @@ public:
 
         createPerlinTerrain();
 
-        int l = 20;
-        int mw = 20;
-        int xmin = water.width() - l-mw;
-        int xmax = water.width() - l;
-
-        int ymin = water.height() - l-mw;
-        int ymax = water.height() - l;
-
     }
 
     void createPerlinTerrain()
@@ -63,7 +55,7 @@ public:
                 h += perlin.Sample(y*f,x*f)*2; f /= 2;
                 h += perlin.Sample(y*f,x*f)*4; f /= 2;
                 h += perlin.Sample(y*f,x*f)*8; f /= 2;
-                terrain(y,x) = h*4*1.3;
+                terrain(y,x) = h*4*1.3*25;
                 suspendedSediment(y,x) = 0.0f;// 0.1*terrain(y,x);
 
             }
@@ -87,6 +79,21 @@ public:
                 } else {
                     terrain(y,x) = std::max(terrain(y,x),0.2f*(-y+water.height()/2));
                 }
+                suspendedSediment(y,x) = 0.0f;
+            }
+        }
+    }
+
+    void createConeTerrain()
+    {
+        for (uint y=0; y<water.height(); y++)
+        {
+            for (uint x=0; x<water.width(); x++)
+            {
+                water(y,x) = 0.0f;
+                float xw = (float)x / (water.width() - 1) * 20000 - 10000;
+                float yw = (float)y / (water.width() - 1) * 20000 - 10000;
+                terrain(y,x) = std::sqrt(xw * xw + yw * yw) / 10;
                 suspendedSediment(y,x) = 0.0f;
             }
         }

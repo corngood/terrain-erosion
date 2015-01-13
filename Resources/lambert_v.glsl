@@ -77,5 +77,5 @@ void main(void)
     
     gl_Position = uProjMatrix*vFragPos;
 
-
+    //vNormal = vec4(inNormal, 1);
 }

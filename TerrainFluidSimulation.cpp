@@ -23,7 +23,7 @@ using namespace Graphics;
 TerrainFluidSimulation::TerrainFluidSimulation(uint dim)
     : _simulationState(dim,dim),
       _simulation(_simulationState),
-      _rain(false),
+      _rain(true),
       _rainPos(180,180),
       _flood(false)
 {}
@@ -127,7 +127,7 @@ void TerrainFluidSimulation::cameraMovement(double dt)
     float dtSeconds = dt/1000.0f;
 
     // camera control
-    float camSpeed = 1.0f*dtSeconds;
+    float camSpeed = 10.0f*dtSeconds;
     float rotSpeed = 60.0f*dtSeconds;
 
     vec3 yAxis(0,1,0);
@@ -194,7 +194,7 @@ void TerrainFluidSimulation::render()
     _testShader->SetUniform("uProjMatrix", _cam.ProjMatrix());
     _testShader->SetUniform("uViewMatrix",viewMatrix);
     _testShader->SetUniform("uViewMatrixNormal", transpose(inverse(viewMatrix)) );
-    _testShader->SetUniform("uGridSize",(int)_simulationState.terrain.width());
+    _testShader->SetUniform("uGridSize",10000);
 
     // bind data
     _gridCoordBuffer.MapData(_testShader->AttributeLocation("inGridCoord"));
@@ -258,7 +258,7 @@ void TerrainFluidSimulation::init()
     _testShader->MapAttribute("inNormal",7);
 
     // position camera
-    _cam.TranslateGlobal(vec3(0.0f,0.2,2));
+    _cam.TranslateGlobal(vec3(0.0f,10,40));
 
     // OpenGL Settings
     glClearColor(0.4f,0.4f,0.4f,0.0f);
@@ -271,7 +271,6 @@ void TerrainFluidSimulation::init()
     _waterHeightBuffer.SetData(_simulationState.water);
     _sedimentBuffer.SetData(_simulationState.suspendedSediment);
     _normalBuffer.SetData(_simulationState.surfaceNormals);
-    
 }
 
 

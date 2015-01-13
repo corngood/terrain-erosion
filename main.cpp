@@ -34,14 +34,14 @@ int main(int argc, char** argv)
 
     int windowWidth = 800;
     int windowHeight = 600;
-    uint terrainDim = 300;
+    uint terrainDim = 512;
 
     // Read Command Line Arguments /////////////////////////////////////////
     ////////////////////////////////////////////////////////////////////////
     try
     {
         TCLAP::CmdLine cmd("Terrain Eroision & Fluid Simulation.", ' ', "0.9");
-        TCLAP::ValueArg<uint> dimArg("d","dim","Size of the terrain. Default: 300.",false,300,"uint");
+        TCLAP::ValueArg<uint> dimArg("d","dim","Size of the terrain. Default: 300.",false,512,"uint");
         cmd.add(dimArg);
         cmd.parse( argc, argv );
         terrainDim = dimArg.getValue();

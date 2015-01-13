@@ -20,7 +20,7 @@
 #include <inttypes.h>
 #include <cassert>
 
-
+#define GLM_FORCE_RADIANS
 #include <glm/glm.hpp> // brew install glm
 
 
