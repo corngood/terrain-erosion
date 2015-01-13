@@ -351,6 +351,10 @@ float FluidSimulation::getWater(int y, int x){
 
 void FluidSimulation::simulateErosion(double dt)
 {
+    /*const float Kc = 25.0f; // sediment capacity constant
+    const float Ks = 0.0001f*12*10; // dissolving constant
+    const float Kd = 0.0001f*12*10; // deposition constant*/
+
     const float Kc = 1;
     const float Ks = 0.5f;
     const float Kd = 1;
@@ -382,18 +386,19 @@ void FluidSimulation::simulateErosion(double dt)
             if (delta > 0.0f)
             {
                 float d = Ks*delta;
-                //terrain(y,x)  -= d;
-                //water(y,x)    += d;
+                terrain(y,x)  -= d;
+                water(y,x)    += d;
                 sediment(y,x) += d;
             }
             // deposit onto ground
             else if (delta < 0.0f)
             {
                 float d = Kd*delta;
-                //terrain(y,x)  -= d;
-                //water(y,x)    += d;
+                terrain(y,x)  -= d;
+                water(y,x)    += d;
                 sediment(y,x) += d;
             }
+            water(y,x) = std::max(0.f, water(y,x));
         }
     }
 }
@@ -475,12 +480,12 @@ void FluidSimulation::update(double dt, bool rain, bool flood)
     // 2. Simulate Flow
     simulateFlow(dt);
     // 3. Simulate Errosion-deposition
-    //simulateErosion(dt);
+    simulateErosion(dt);
     // 4. Advection of suspended sediment
-    //simulateSedimentTransportation(dt);
+    simulateSedimentTransportation(dt);
     // 5. Simulate Evaporation
-    //simulateEvaporation(dt);
+    simulateEvaporation(dt);
 
-    //smoothTerrain();
+    smoothTerrain();
     computeSurfaceNormals();
 }
